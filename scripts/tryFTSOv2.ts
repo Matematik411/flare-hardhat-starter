@@ -1,7 +1,7 @@
 import "@nomicfoundation/hardhat-verify";
 import axios from "axios";
 import "dotenv/config";
-import { artifacts, ethers, run } from 'hardhat';
+import { artifacts, ethers } from 'hardhat';
 import { FTSOV2NFTContract, FTSOV2NFTInstance } from '../typechain-types';
 const FTSOV2NFT: FTSOV2NFTContract = artifacts.require('FTSOV2NFT');
 
@@ -32,19 +32,6 @@ async function getPrice(symbol: string, epoch: number) {
     return dataWithProof
 }
 
-async function getDummyPrice(symbol: string, epoch: number, price: number, decimals: number) {
-    return {
-        proof: [],
-        body: {
-            votingRoundId: epoch,
-            id: symbol,
-            value: price,
-            turnoutBIPS: 65535, // 100%
-            decimals: decimals
-        }
-    }
-}
-
 async function main() {
     const [deployer] = await ethers.getSigners();
 
@@ -64,13 +51,10 @@ async function main() {
 
     // const btcPrice = await getPrice(BTC, currentVotingEpoch)
     // const flrPrice = await getPrice(FLR, currentVotingEpoch)
-    const flrPrice = await getDummyPrice(FLR, currentVotingEpoch,
-        30000, 4
+    const flrPrice = await getPrice(FLR, currentVotingEpoch,
     )
     // const ethPrice = await getPrice(ETH, currentVotingEpoch)
-    const ethPrice = await getDummyPrice(ETH, currentVotingEpoch,
-        600000, 2
-
+    const ethPrice = await getPrice(ETH, currentVotingEpoch,
     )
 
     const price = await simpleNFTExample.getPriceInFlare(
@@ -88,16 +72,16 @@ async function main() {
         }
     )
     console.log(tx)
-    try {
-        const result = await run("verify:verify", {
-            address: simpleNFTExample.address,
-            constructorArguments: args,
-        })
+    // try {
+    //     const result = await run("verify:verify", {
+    //         address: simpleNFTExample.address,
+    //         constructorArguments: args,
+    //     })
 
-        console.log(result)
-    } catch (e: any) {
-        console.log(e.message)
-    }
+    //     console.log(result)
+    // } catch (e: any) {
+    //     console.log(e.message)
+    // }
 }
 
 main().then(() => process.exit(0))

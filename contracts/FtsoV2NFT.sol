@@ -69,18 +69,16 @@ contract FTSOV2NFT is ERC721URIStorage {
         IFTSOFeedVerifier.FeedWithProof calldata quoteCurrencyPrice,
         IFTSOFeedVerifier.FeedWithProof calldata baseCurrencyPrice
     ) public view returns (uint256) {
-        if (quoteCurrencyPrice.proof.length >= 1) {
-            require(
-                checkCorrectness(quoteCurrencyPrice),
-                "Invalid quote currency price"
-            );
-        }
-        if (baseCurrencyPrice.proof.length >= 1) {
-            require(
-                checkCorrectness(baseCurrencyPrice),
-                "Invalid base currency price"
-            );
-        }
+        require(
+            checkCorrectness(quoteCurrencyPrice),
+            "Invalid quote currency price"
+        );
+
+        require(
+            checkCorrectness(baseCurrencyPrice),
+            "Invalid base currency price"
+        );
+
         // Check that the base currency is FLR
         require(
             baseCurrencyPrice.body.id ==
