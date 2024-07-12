@@ -69,7 +69,11 @@ const config: HardhatUserConfig = {
     coston2: {
       url: "https://coston2-api.flare.network/ext/C/rpc" + (FLARE_RPC_API_KEY ? `?x-apikey=${FLARE_RPC_API_KEY}` : ""),
       accounts: [`${PRIVATE_KEY}`],
-      chainId: 114
+      chainId: 114,
+      // forking: {
+      //   url: "https://coston2-api.flare.network/ext/C/rpc" + (FLARE_RPC_API_KEY ? `?x-apikey=${FLARE_RPC_API_KEY}` : ""),
+      //   blockNumber: 9785255
+      // }
     },
     songbird: {
       url: "https://songbird-api.flare.network/ext/bc/C/rpc" + (FLARE_RPC_API_KEY ? `?x-apikey=${FLARE_RPC_API_KEY}` : ""),
