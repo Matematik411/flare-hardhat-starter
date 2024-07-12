@@ -155,7 +155,7 @@ async function executeStateConnectorProof(txs: string[]) {
 
     const stateConnector = await ethers.getContractAt(
         flareLib.nameToAbi("IStateConnector", "coston").data,
-        flareLib.nameToAddress("StateConnector", "coston"),
+        "0x1000000000000000000000000000000000000001",
     );
 
     const responses = await Promise.all(txs.map(async (tx) => {
@@ -229,7 +229,7 @@ async function main() {
 
     if (hardhat.network.name == "sepolia") {
         await createSepoliaTransactions();
-    } else if (hardhat.network.name == "coston") {
+    } else if (hardhat.network.name == "coston2") {
         await executeStateConnectorProof(
             [
                 "0xac640ab047aa1097ddd473e5940921eb500a9912b33072b8532617692428830e",

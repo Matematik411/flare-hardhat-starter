@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {IEVMTransactionVerification} from "@flarenetwork/flare-periphery-contracts/coston/stateConnector/interface/IEVMTransactionVerification.sol";
-import {EVMTransaction} from "@flarenetwork/flare-periphery-contracts/coston/stateConnector/interface/EVMTransaction.sol";
-import {FlareContractsRegistryLibrary} from "@flarenetwork/flare-periphery-contracts/coston/util-contracts/ContractRegistryLibrary.sol";
+import {IEVMTransactionVerification} from "@flarenetwork/flare-periphery-contracts/coston2/stateConnector/interface/IEVMTransactionVerification.sol";
+import {EVMTransaction} from "@flarenetwork/flare-periphery-contracts/coston2/stateConnector/interface/EVMTransaction.sol";
+import {FlareContractsRegistryLibrary} from "@flarenetwork/flare-periphery-contracts/coston2/util-contracts/ContractRegistryLibrary.sol";
 
 struct EventInfo {
     address sender;
@@ -24,10 +24,11 @@ contract EthereumPaymentCollector {
         EVMTransaction.Proof calldata transaction
     ) public view returns (bool) {
         // Use the library to get the verifier contract and verify that this transaction was proved by state connector
+        // On coston2 this is still hardcoded
         return
-            FlareContractsRegistryLibrary
-                .auxiliaryGetIEVMTransactionVerification()
-                .verifyEVMTransaction(transaction);
+            IEVMTransactionVerification(
+                0x1A459e9d2AF1E48E18eee1ef5c90089F437043d0
+            ).verifyEVMTransaction(transaction);
     }
 
     function collectPayment(
