@@ -1,14 +1,13 @@
+import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-verify";
 import "dotenv/config";
-import { artifacts, ethers, run } from 'hardhat';
-import { JsonApiExampleContract } from '../typechain-types';
-import { JsonApiExampleInstance } from "../typechain-types/contracts/web2WeatherInteractor.sol/JsonApiExample";
-const JsonApiExample: JsonApiExampleContract = artifacts.require('JsonApiExample');
+import { parseUnits } from "ethers";
+import { artifacts, ethers } from 'hardhat';
+import { EncodingTestContract, EncodingTestInstance } from '../typechain-types';
+const EncodingTest: EncodingTestContract = artifacts.require('EncodingTest');
 
 
-const { OPEN_WEATHER_API_KEY } = process.env
-
-const VERIFIER_SERVER_URL = "http://localhost:3000/IJsonApi/prepareResponse";
+const VERIFIER_SERVER_URL = "http://localhost:3100/IJsonApi/prepareResponse";
 
 async function getAttestationData(timestamp: number): Promise<any> {
 
@@ -21,9 +20,9 @@ async function getAttestationData(timestamp: number): Promise<any> {
                 "sourceId": "0x5745423200000000000000000000000000000000000000000000000000000000",
                 "messageIntegrityCode": "0x0000000000000000000000000000000000000000000000000000000000000000",
                 "requestBody": {
-                    "url": `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=39.099724&lon=-94.578331&dt=${timestamp}&appid=${OPEN_WEATHER_API_KEY}`,
-                    "postprocessJq": "{latitude:(.lat*pow(10;6)),longitude:(.lon*pow(10;6)),temperature:(.data[0].temp*pow(10;6)),wind_speed:(.data[0].wind_speed*pow(10;6)),wind_deg:.data[0].wind_deg,timestamp:.data[0].dt,description:[.data[0].weather[].description]}",
-                    "abi_signature": "{\"struct Weather\":{\"latitude\":\"int256\",\"longitude\":\"int256\",\"temperature\":\"uint256\",\"wind_speed\":\"uint256\",\"wind_deg\":\"uint256\",\"timestamp\":\"uint256\",\"description\":\"string[]\"}}"
+                    "url": `testing123`, // starting string
+                    "postprocessJq": "1000", // repetitions
+                    "abi_signature": "{\"struct Song\":{\"verse\":\"string\"}}"
                 }
             })
         })).json();
@@ -33,7 +32,7 @@ async function getAttestationData(timestamp: number): Promise<any> {
 
 
 async function main() {
-    const attestationData = await getAttestationData(1729858394);
+    const attestationData = await getAttestationData(1730300000);
 
     console.log(attestationData.response);
 
@@ -41,22 +40,31 @@ async function main() {
 
     console.log("Deploying contracts with the account:", deployer.address);
 
-    const jsonApi: JsonApiExampleInstance = await JsonApiExample.at("0xf37e9ACe5D12a95C72Cb795A9178E6fFF34040eE") //new()
+    // const encoder: EncodingTestInstance = await EncodingTest.new()
+    const encoder: EncodingTestInstance = await EncodingTest.at("0xEF462dF6a439871aC4394aCb58b7E54271F0a6b1") //new()
 
-    await jsonApi.addWeather(attestationData.response);
-
-    try {
-        const result = await run("verify:verify", {
-            address: jsonApi.address,
-            constructorArguments: [],
-        })
-
-        console.log(result)
-    } catch (e: any) {
-        console.log(e.message)
-    }
+    console.log(parseUnits("200000", "wei"))
+    await encoder.addSong(attestationData.response, { gasLimit: parseUnits("200000", "wei") });
 
 
+    const result = await encoder.songs(0);
+    console.log(result);
+
+
+    // // tudi to ne dela
+    // const txRequest = await encoder.populateTransaction.addSong(attestationData.response);
+    // txRequest.gasLimit = parseUnits("200000", "wei");
+    // const txResponse = await deployer.sendTransaction(txRequest);
+
+    // ---------------------------------------------------------
+    // results for string:
+    // working:
+    // 10*20, 10*1.000 (spends 7.1 M gas)
+
+    // not working:
+    // ....... gas required exceeds allowance (8000000) 
+    // 10*1.500, 10*5.000, 10*10.000
+    // ---------------------------------------------------------
 }
 
 main().then(() => process.exit(0))
