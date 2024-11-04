@@ -4,14 +4,8 @@ pragma solidity >=0.7.6 <0.9;
 import "./generated/interfaces/verification/IJsonApiVerification.sol";
 import "./generated/implementation/verification/JsonApiVerification.sol";
 
-struct Song {
-    bytes verse;
-    bytes comment;
-    bytes more;
-}
-
-contract EncodingTest {
-    Song[] public songs;
+contract EncodingSimple {
+    bytes[] public songs;
     IJsonApiVerification public jsonApiVerification;
 
     constructor() {
@@ -28,9 +22,9 @@ contract EncodingTest {
         });
         require(jsonApiVerification.verifyJsonApi(proof), "Invalid proof");
 
-        Song memory _song = abi.decode(
+        bytes memory _song = abi.decode(
             response.responseBody.abi_encoded_data,
-            (Song)
+            (bytes)
         );
 
         songs.push(_song);
