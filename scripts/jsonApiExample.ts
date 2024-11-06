@@ -20,8 +20,8 @@ async function getAttestationData(timestamp: number): Promise<any> {
                 "messageIntegrityCode": "0x0000000000000000000000000000000000000000000000000000000000000000",
                 "requestBody": {
                     "url": `testing123`, // starting string
-                    "postprocessJq": "360", // repetitions
-                    "abi_signature": "{\"struct Song\":{\"verse\":\"bytes\", \"comment\":\"bytes\", \"more\":\"bytes\"}}"
+                    "postprocessJq": "200", // repetitions
+                    "abi_signature": "{\"struct Song\":{\"verse\":\"bytes\", \"comment\":\"bytes\", \"more\":\"bytes\", \"expansion\":\"string\", \"epilogue\":\"string\"}}"
                 }
             })
         })).json();
@@ -39,9 +39,16 @@ async function main() {
 
 
     // const encAddress = "0xEF462dF6a439871aC4394aCb58b7E54271F0a6b1";
-    // const encoder: EncodingTestInstance = await EncodingTest.at(encAddress);
-    const encoder: EncodingTestInstance = await EncodingTest.new();
-
+    // const encAddress = "0xa795a4340199c19B68e205c40DC3E1C49ec11a6F"; // remix .. gasLimit = Estimated Gas
+    // const encAddress = "0x47d482D68bC43F4cdE4728A16B0A7D2Bd098dd09"; // remix .. gasLimit = Custom: 3M ==> THIS IS NOT TRANSACTION GAS LIMIT, as a transaction with 7M gas is still allowed
+    // const encAddress = "0x6B22A384Be54213146DF280F4DF3DfdA77f44F8b"; // remix .. gasLimit = Custom: 8M (can't set it to more)
+    // const encAddress = "0x50F580466E9825f3967144CbE88e0fb3d830D7f2"; // remix .. gasLimit = Custom: 8M (can't set it to more)
+    // remix .. gasLimit = Custom: 3M (can still send 7.8M gas transactions)
+    // but remix declies such transactiony at the start !
+    const encAddress = "0x73a4c4bc804cc0ac369092df04c4bbc9cc59d054";
+    const encoder: EncodingTestInstance = await EncodingTest.at(encAddress);
+    // const encoder: EncodingTestInstance = await EncodingTest.new();
+    console.log(attestationData.response);
     const data = await encoder.addSong(attestationData.response); // gasLimit override can't be added here
     console.log(data);
 
@@ -90,8 +97,17 @@ async function main() {
     // ---------------------------------------------------------
     // results for multiple bytes:
     // working:
-    // 10*360*3 still works despite being split into 3 separate bytes 
+    // - 10*360*3 still works despite being split into 3 separate bytes 
+    // - 10*210*5 = 10500 still workd with (bytes,bytes,bytes,string,string) ... still only barely any loss of info
+    //
+    // - 10*220*5 = 11000 EXCEEDS GAS LIMIT
     // ---------------------------------------------------------
+    // REMIX:
+    // I am able to send a transaction with gasEstimate > 8M and then it fails,
+    // this is more than I can do with hardhat only
+    //
+    // ---------------------------------------------------------
+
 }
 
 main().then(() => process.exit(0))

@@ -8,6 +8,8 @@ struct Song {
     bytes verse;
     bytes comment;
     bytes more;
+    string expansion;
+    string epilogue;
 }
 
 contract EncodingTest {
