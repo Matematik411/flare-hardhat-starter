@@ -21,7 +21,7 @@ async function getAttestationData(timestamp: number): Promise<any> {
                 "requestBody": {
                     "url": `testing123`, // starting string
                     "postprocessJq": "1100", // repetitions
-                    "abi_signature": "bytes"
+                    "abi_signature": "string"
                 }
             })
         })).json();
@@ -31,16 +31,14 @@ async function getAttestationData(timestamp: number): Promise<any> {
 
 
 async function main() {
+    // get attestation data
     const attestationData = await getAttestationData(1730300000);
-
     console.log(attestationData.response);
+    // get sender account
     const [deployer] = await ethers.getSigners();
     console.log("Deploying contracts with the account:", deployer.address);
 
-
-
-    // const encAddress = "123"
-    // const encoder: EncodingSimpleInstance = await EncodingSimple.at(encAddress);
+    // deploy a contract and make a transaction
     const encoder: EncodingSimpleInstance = await EncodingSimple.new();
     const data = await encoder.addSong(attestationData.response);
     console.log(data);

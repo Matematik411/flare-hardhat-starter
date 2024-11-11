@@ -5,7 +5,7 @@ import "./generated/interfaces/verification/IJsonApiVerification.sol";
 import "./generated/implementation/verification/JsonApiVerification.sol";
 
 contract EncodingSimple {
-    bytes[] public songs;
+    string[] public songs;
     IJsonApiVerification public jsonApiVerification;
 
     constructor() {
@@ -22,9 +22,9 @@ contract EncodingSimple {
         });
         require(jsonApiVerification.verifyJsonApi(proof), "Invalid proof");
 
-        bytes memory _song = abi.decode(
+        string memory _song = abi.decode(
             response.responseBody.abi_encoded_data,
-            (bytes)
+            (string)
         );
 
         songs.push(_song);
